@@ -29,20 +29,24 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
-// =====================
 // POSTS (публичные)
-// =====================
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');
 
-
-// =====================
-// POSTS (только auth)
-// важно: /posts/create должен быть ДО /posts/{slug}
-// =====================
+// POSTS (только auth) — ВАЖНО: create ДО {slug}
 Route::middleware('auth')->group(function () {
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+
+    Route::get('/posts/{post:slug}/edit', [PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{post:slug}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post:slug}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+
+
+// просмотр темы — ПОСЛЕ create
+Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');
+
 
     // редактирование темы (только автор)
     Route::get('/posts/{post:slug}/edit', [PostController::class, 'edit'])->name('posts.edit');
